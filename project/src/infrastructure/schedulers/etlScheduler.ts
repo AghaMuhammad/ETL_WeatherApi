@@ -18,9 +18,10 @@ export const startETLScheduler = () => {
     return; // Do not schedule when testing.
   }
   // Schedule the ETL job to run at the top of every hour.
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 * * * *', async () => {
     console.log('ETL job started...');
     try {
+      // Get cities from environment variable (comma-separated) or default to a few cities.
       const cities = process.env.CITIES ? process.env.CITIES.split(',') : ['London', 'New York', 'Tokyo'];
       const rawDataArray = await extractMultipleCities(cities);
       const transformedData = transformMultipleWeatherData(rawDataArray);
@@ -30,5 +31,20 @@ export const startETLScheduler = () => {
       console.error('ETL job failed:', error);
     }
   });
-  
 };
+
+
+//For Immediate Testing: we can use the following scheduler function for immediately testing the etl pipelin or else the 
+// approach that is currently implmented schedules the etl job to run at the top of every hour
+// cron.schedule('* * * * *', async () => {
+//     console.log('ETL job started...');
+//     try {
+//       const cities = process.env.CITIES ? process.env.CITIES.split(',') : ['London', 'New York', 'Tokyo'];
+//       const rawDataArray = await extractMultipleCities(cities);
+//       const transformedData = transformMultipleWeatherData(rawDataArray);
+//       await loadWeatherData(transformedData);
+//       console.log('ETL job completed successfully.');
+//     } catch (error) {
+//       console.error('ETL job failed:', error);
+//     }
+//   });
